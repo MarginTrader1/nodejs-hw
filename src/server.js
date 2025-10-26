@@ -64,7 +64,6 @@ app.use((err, req, res, next) => {
   console.error(err);
 
   const isProd = process.env.NODE_ENV === 'production';
-  console.error(isProd);
 
   res.status(500).json({
     message: isProd
