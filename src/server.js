@@ -1,53 +1,29 @@
 // src/server.js
 import express from 'express';
 import cors from 'cors';
-import pino from 'pino-http';
+
 import 'dotenv/config';
 import { connectMongoDB } from './db/connectMongoDB.js';
+
+import { errorHandler } from './middleware/errorHandler.js';
+import { notFoundHandler } from './middleware/notFoundHandler.js';
+import { logger } from './middleware/logger.js';
+import { timeLogger } from './middleware/timeLogger.js';
+
+//імпортуємо групу маршрутів
+import notesRoutes from './routes/notesRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
-// Middleware для парсингу JSON
-app.use(express.json());
 
-// Middleware, яка дозволяє запити з будь-яких джерел
-app.use(cors());
+app.use(logger); // инфо про запити - має стояти першим 
+app.use(express.json()); // Middleware для парсингу JSON
+app.use(cors()); // Middleware, яка дозволяє запити з будь-яких джерел
+app.use(timeLogger); // Middleware для логування часу
 
-// Middleware Pino - инфо про запити
-app.use(
-  pino({
-    level: 'info',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'HH:MM:ss',
-        ignore: 'pid,hostname',
-        messageFormat:
-          '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
-        hideObject: true,
-      },
-    },
-  }),
-);
-
-// Middleware для логування часу
-app.use((req, res, next) => {
-  console.log(`Time: ${new Date().toLocaleString()}`);
-  next();
-});
-
-// Перший маршрут
-app.get('/notes', (req, res) => {
-  res.status(200).json({ message: 'Retrieved all notes' });
-});
-
-app.get('/notes/:noteId', (req, res) => {
-  res.status(200).json({
-    message: 'Retrieved note with ID: id_param',
-  });
-});
+// Група маршрутів для нотаток
+app.use(notesRoutes);
 
 // Маршрут для тестування middleware помилки
 app.get('/test-error', () => {
@@ -56,22 +32,10 @@ app.get('/test-error', () => {
 });
 
 // Middleware для несуществующих маршрутов (після всіх маршрутів)
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
+app.use(notFoundHandler);
 
 // Middleware для обробки помилок
-app.use((err, req, res, next) => {
-  console.error(err);
-
-  const isProd = process.env.NODE_ENV === 'production';
-
-  res.status(500).json({
-    message: isProd
-      ? 'Something went wrong. Please try again later.'
-      : err.message,
-  });
-});
+app.use(errorHandler);
 
 // підключення до MongoDB
 await connectMongoDB();
