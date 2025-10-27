@@ -16,7 +16,7 @@ router.post('/notes', createNote);
 //  Четвертий маршрут - видалення нотатки
 router.delete('/notes/:noteId', deleteNote);
 
-//  Четвертий маршрут - видалення нотатки
+//  П'ятий маршрут - оновлення нотатки
 router.patch('/notes/:noteId', updateNote);
 
 export default router;
