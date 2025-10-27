@@ -17,7 +17,7 @@ export const getNoteById = async (req, res, next) => {
 
   if (!note) {
 
-    next(createHttpError(404, `Note with ${noteId} not found`));
+    next(createHttpError(404, `Note not found`));
     return;
   }
 
@@ -40,7 +40,7 @@ export const deleteNote = async (req, res, next) => {
     _id: noteId,});
 
   if (!note) {
-    next(createHttpError(404, `Note with ${noteId} not found`));
+    next(createHttpError(404, `Note not found`));
     return;
   }
 
@@ -60,7 +60,7 @@ export const updateNote = async (req, res, next) => {
 );
 
   if (!note) {
-    next(createHttpError(404, `Note with ${noteId} not found`));
+    next(createHttpError(404, `Note not found`));
     return;
   }
 
