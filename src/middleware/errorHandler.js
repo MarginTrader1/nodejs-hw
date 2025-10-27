@@ -1,10 +1,9 @@
-import { HttpError } from "http-errors";
+import { HttpError } from 'http-errors';
 
 // Middleware для обробки помилок
 
 export const errorHandler = (err, req, res, next) => {
-  
-    console.log("Error Middleware:", err);
+  console.log('Error Middleware:', err);
 
   // Якщо помилка створена через http-errors
   if (err instanceof HttpError) {

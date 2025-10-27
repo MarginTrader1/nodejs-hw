@@ -16,8 +16,7 @@ import notesRoutes from './routes/notesRoutes.js';
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
-
-app.use(logger); // инфо про запити - має стояти першим 
+app.use(logger); // инфо про запити - має стояти першим
 app.use(express.json()); // Middleware для парсингу JSON
 app.use(cors()); // Middleware, яка дозволяє запити з будь-яких джерел
 app.use(timeLogger); // Middleware для логування часу
